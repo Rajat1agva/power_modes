@@ -7,17 +7,22 @@
  */ 
 #define  F_CPU	4000000UL
 #include <avr/io.h>
-#include<math.h>
+#include <math.h>
 #include <util/delay.h>
 #include "ADC_AVR128DA64 (1).h"
 #include "UART_1_AVR128DA64.h"
+
 float battery_Read(void);
 float supply_Read(void);
 void supplyconnected(void);
 void supplydisconnected(void);
+
+
 uint16_t ADC0_read(char pin);
 float battery_voltage=0;
 float supply_voltage=0;
+
+
 int main(void)
 {   ADC0_init();  //Initialize ADC
 	ADC0_start(); //Start ADC
@@ -27,11 +32,11 @@ int main(void)
    {  battery_voltage=battery_Read();
 	  supply_voltage=supply_Read();
 	 //USART1_sendFloat(battery_voltage,1);
-	   if(supply_voltage>11)
+	   if(supply_voltage > 11)
 	   {
 		   supplyconnected(); // Supply connected
 	   }
-	   else if(supply_voltage<=10)
+	   else if(supply_voltage <= 10)
 	   {
 		 supplydisconnected(); // Supply disconnected
 	   }
