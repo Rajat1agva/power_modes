@@ -25,8 +25,8 @@ int main(void)
     /* Replace with your application code */
    while(1)
    {  battery_voltage=battery_Read();
-	   supply_voltage=supply_Read();
-	 USART1_sendFloat(battery_voltage,1);
+	  supply_voltage=supply_Read();
+	 //USART1_sendFloat(battery_voltage,1);
 	   if(supply_voltage>11)
 	   {
 		   supplyconnected(); // Supply connected
