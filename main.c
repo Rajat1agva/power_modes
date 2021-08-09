@@ -15,6 +15,7 @@ float battery_Read(void);
 float supply_Read(void);
 void supplyconnected(void);
 void supplydisconnected(void);
+uint16_t ADC0_read(char pin);
 float battery_voltage=0;
 float supply_voltage=0;
 int main(void)
@@ -23,15 +24,14 @@ int main(void)
 	USART1_init(9600);
     /* Replace with your application code */
    while(1)
-   {
-	   // USART1_sendFloat(battery_Read(),1);
-		//USART1_sendFloat(supply_Read(),1);    
-		
-	   if(supply_Read()>10)
+   {  battery_voltage=battery_Read();
+	   supply_voltage=supply_Read();
+	 
+	   if(supply_voltage>11)
 	   {
 		   supplyconnected();
 	   }
-	   else if(supply_Read()<=10)
+	   else if(supply_voltage<=10)
 	   {
 		 supplydisconnected();
 	   }
@@ -43,14 +43,14 @@ int main(void)
 
 float battery_Read(void)
 {
-uint16_t adc_value=ADC0_read(1);
+uint16_t adc_value=ADC0_read(0x00);
 float voltage_value=adc_value/1241.2121; 
 return (voltage_value*3.636);
 //USART1_sendInt(adc_value);
 }
 float supply_Read(void)
 {
-	uint16_t adc_value=ADC0_read(0);
+	uint16_t adc_value=ADC0_read(0x01);
 	float voltage_value=0,final_result=0;
 	voltage_value=(float)((adc_value)/1241.2121);
 	//USART1_sendInt(adc_value);
@@ -60,13 +60,13 @@ return (final_result);
 void supplyconnected(void)
 {
 	USART1_sendString("Supply connected");
-	_delay_ms(100);
-	//USART1_sendFloat(battery_Read(),1);
-	if(battery_Read()>11)
+	
+	
+	if(battery_voltage>11)
 	{
 		USART1_sendString("Charging complete");
 	}
-	else if((battery_Read()<11)&&(supply_Read()>10)){
+	else if((battery_voltage<11)&&(supply_voltage>10)){
 	
 	
 		USART1_sendString("Charging");
@@ -79,17 +79,26 @@ void supplyconnected(void)
 void supplydisconnected(void)
 {
 	 USART1_sendString("Supply disconnected");
-	 USART1_sendFloat(supply_Read(),1); 
-	 if(battery_Read()<9)
+	
+	 if(battery_voltage<9)
 	 {
 		 USART1_sendString("Low battery");
 	 }
 	else
 	{
-	while((battery_Read()<11)&&(supply_Read()<10))
+	while((battery_voltage<11)&&(supply_voltage<10))
 	{
-		USART1_sendFloat(battery_Read(),1);
+		USART1_sendFloat(battery_voltage,1);
 	}
 	
 	}
-} 
+}
+uint16_t ADC0_read(char pin)
+{
+	ADC0.MUXPOS = pin;
+	ADC0_start();
+	/* Wait for ADC result to be ready */
+	while (!(ADC0.INTFLAGS & ADC_RESRDY_bm));
+	/* Clear the interrupt flag by reading the result */
+	return ADC0.RES;
+}
