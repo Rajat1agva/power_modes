@@ -84,12 +84,12 @@ void supplydisconnected(void)
 	 {
 		 USART1_sendString("Low battery");
 	 }
-	else
+	else if(battery_voltage>9)
 	{
-	while((battery_voltage<11)&&(supply_voltage<10))
-	{
+	
+	
 		USART1_sendFloat(battery_voltage,1);
-	}
+	
 	
 	}
 }
