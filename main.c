@@ -26,14 +26,14 @@ int main(void)
    while(1)
    {  battery_voltage=battery_Read();
 	   supply_voltage=supply_Read();
-	 
+	 USART1_sendFloat(battery_voltage,1);
 	   if(supply_voltage>11)
 	   {
-		   supplyconnected();
+		   supplyconnected(); // Supply connected
 	   }
 	   else if(supply_voltage<=10)
 	   {
-		 supplydisconnected();
+		 supplydisconnected(); // Supply disconnected
 	   }
 	   
 	  
@@ -46,14 +46,13 @@ float battery_Read(void)
 uint16_t adc_value=ADC0_read(0x00);
 float voltage_value=adc_value/1241.2121; 
 return (voltage_value*3.636);
-//USART1_sendInt(adc_value);
+
 }
 float supply_Read(void)
 {
 	uint16_t adc_value=ADC0_read(0x01);
 	float voltage_value=0,final_result=0;
 	voltage_value=(float)((adc_value)/1241.2121);
-	//USART1_sendInt(adc_value);
 	final_result=voltage_value*3.636;
 return (final_result);
 }
@@ -80,7 +79,7 @@ void supplydisconnected(void)
 {
 	 USART1_sendString("Supply disconnected");
 	
-	 if(battery_voltage<9)
+	 if(battery_voltage<8)
 	 {
 		 USART1_sendString("Low battery");
 	 }
